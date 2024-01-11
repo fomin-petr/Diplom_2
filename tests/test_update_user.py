@@ -1,9 +1,17 @@
 import helper
 import requests
+import allure
 from data import Urls, Api
 
 
 class TestUpdateUser:
+    @allure.title('Проверка изменения почты на уникальную у авторизованного пользователя')
+    @allure.description(f'Отправка Patch запроса на {Urls.server}{Api.user} с токеном авторизации и уникальным email\n'
+                        f'ОР: код 200, в теле ответа получаем True и обновленные данные\n')
+    @allure.step(f'Сгененрировать случайного пользователя\nЗарегистрировать пользователя\n'
+                 f'Подготовить данные с новым уникальным email\n'
+                 f'Отправить Patch запрос на {Urls.server}{Api.user} с токеном авторизации и подготовленными данными\n'
+                 f'Постусловие: удалить пользователя')
     def test_update_user_email_success(self):
         access_token, email, user, password = helper.create_user()
         new_email = '1' + email
@@ -17,6 +25,13 @@ class TestUpdateUser:
                 )
         helper.delete_user(access_token)
 
+    @allure.title('Проверка изменения имени у авторизованного пользователя')
+    @allure.description(f'Отправка Patch запроса на {Urls.server}{Api.user} с токеном авторизации и новым name\n'
+                        f'ОР: код 200, в теле ответа получаем True и обновленные данные\n')
+    @allure.step(f'Сгененрировать случайного пользователя\nЗарегистрировать пользователя\n'
+                 f'Подготовить данные с новым name\n'
+                 f'Отправить Patch запрос на {Urls.server}{Api.user} с токеном авторизации и подготовленными данными\n'
+                 f'Постусловие: удалить пользователя')
     def test_update_user_name_success(self):
         access_token, email, user, password = helper.create_user()
         new_user = '1' + user
@@ -30,6 +45,13 @@ class TestUpdateUser:
                 )
         helper.delete_user(access_token)
 
+    @allure.title('Проверка изменения пароля у авторизованного пользователя')
+    @allure.description(f'Отправка Patch запроса на {Urls.server}{Api.user} с токеном авторизации и новым паролем\n'
+                        f'ОР: код 200, в теле ответа получаем True и обновленные данные\n')
+    @allure.step(f'Сгененрировать случайного пользователя\nЗарегистрировать пользователя\n'
+                 f'Подготовить данные с новым паролем\n'
+                 f'Отправить Patch запрос на {Urls.server}{Api.user} с токеном авторизации и подготовленными данными\n'
+                 f'Постусловие: удалить пользователя')
     def test_update_user_password_success(self):
         access_token, email, user, password = helper.create_user()
         new_password = '1' + password
@@ -43,6 +65,13 @@ class TestUpdateUser:
                 )
         helper.delete_user(access_token)
 
+    @allure.title('Проверка изменения данных у неавторизованного пользователя')
+    @allure.description(f'Отправка Patch запроса на {Urls.server}{Api.user} с пустым токеном авторизации и новыми данными\n'
+                        f'ОР: код 401, в теле ответа получаем False и сообщении о необходимости авторизации\n')
+    @allure.step(f'Сгененрировать случайного пользователя\nЗарегистрировать пользователя\n'
+                 f'Подготовить обновленные данные\n'
+                 f'Отправить Patch запрос на {Urls.server}{Api.user} с пустым токеном авторизации и подготовленными данными\n'
+                 f'Постусловие: удалить пользователя')
     def test_update_user_without_token_not_authorized(self):
         access_token, email, user, password = helper.create_user()
         new_email = '1' + email
@@ -60,6 +89,14 @@ class TestUpdateUser:
 
         helper.delete_user(access_token)
 
+    @allure.title('Проверка изменения почты на не уникальную у авторизованного пользователя')
+    @allure.description(f'Отправка Patch запроса на {Urls.server}{Api.user} с токеном авторизации и неуникальным email\n'
+                        f'ОР: код 403, в теле ответа получаем False и сообщение, что почта не уникальна\n')
+    @allure.step(f'Сгененрировать двух случайных пользователей\nЗарегистрировать пользователкй\n'
+                 f'Подготовить данные для запроса с кредами второго пользователя\n'
+                 f'Отправить Patch запрос на {Urls.server}{Api.user} с токеном авторизации первого пользователя '
+                 f'и подготовленными данными\n'
+                 f'Постусловие: удалить обоих пользователей')
     def test_update_user_existing_email_forbidden(self):
         access_token_1, email_1, user_1, password_1 = helper.create_user()
         access_token_2, email_2, user_2, password_2 = helper.create_user()
@@ -74,4 +111,3 @@ class TestUpdateUser:
                                                                    }
         helper.delete_user(access_token_1)
         helper.delete_user(access_token_2)
-
